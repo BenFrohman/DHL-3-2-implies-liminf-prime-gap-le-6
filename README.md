@@ -55,6 +55,9 @@ with `b − a ≤ 6`, then the next prime after `a` is ≤ `b`, so the gap at `a
 Literature claims (Polymath8b's 246, the Stadlmann preprint, the "Tao–Brady" name)
 are not formalized.
 
+## Paper
+`paper/DHL32_note.tex` and compiled `paper/DHL32_note.pdf` (build: `tectonic paper/DHL32_note.tex`).
+
 ## Build
 Requires elan. Toolchain `leanprover/lean4:v4.30.0-rc1`, Mathlib `v4.30.0-rc1`.
 ```
