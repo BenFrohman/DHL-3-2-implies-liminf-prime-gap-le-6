@@ -36,10 +36,24 @@ translates `n + h`, which is all the argument uses.
 Theorem 2's last step is proved directly (no pigeonhole): if primes `a < b`
 with `b − a ≤ 6`, then the next prime after `a` is ≤ `b`, so the gap at `a` is ≤ 6.
 
-## Not formalized
-Theorems 3 and 4 of the note (non-implication DHL[3,2] ⇏ DHL[2,2]; parity /
-sieve-limit discussion; literature bounds such as Polymath8b's 246) are
-meta-mathematical or literature claims, not formal statements, so they are omitted.
+## Theorems 3 and 4 (honest versions, `DHL32/Theorems34.lean`)
+- `DHLfor P k j` — DHL with an abstract decidable predicate `P` in place of primality;
+  `DHLfor_prime : DHLfor Nat.Prime k j ↔ DHL k j`.
+- **Theorem 3** `dhl32_not_implies_dhl22_combinatorially`: there is a `P`
+  (`Ptoy n := n % 4 < 2`) with `DHLfor P 3 2` — for **every** 3-set, hence
+  `{0,2,6}` and `{0,4,6}` — yet `P n ∧ P (n+2)` never holds and `DHLfor P 2 2` fails
+  (`{0,2}` is admissible, `admissible_02`).
+  *Meaning:* `DHL[3,2] ⇒ DHL[2,2]` cannot be derived from the combinatorial form of
+  DHL[3,2] alone. **This is not an independence result for the actual primes.**
+- **Theorem 4.** The parity barrier is an explicit hypothesis `ParityBarrier Proves`
+  (`Proves k j → j ≤ ⌈k/2⌉`), **not an axiom and not proved**.
+  - `parity_two_needs_three`: under it, `Proves k 2 → 3 ≤ k`.
+  - `admissible_three_diam_ge_six` (unconditional): no admissible 3-set fits in an
+    interval `[a, a+5]`; with `min_diam_admissible_three` ({0,2,6}, {0,4,6} admissible)
+    the minimal diameter of admissible 3-sets is exactly 6.
+
+Literature claims (Polymath8b's 246, the Stadlmann preprint, the "Tao–Brady" name)
+are not formalized.
 
 ## Build
 Requires elan. Toolchain `leanprover/lean4:v4.30.0-rc1`, Mathlib `v4.30.0-rc1`.
