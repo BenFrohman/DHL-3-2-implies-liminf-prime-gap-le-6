@@ -1,145 +1,166 @@
-% Copyright 2026 Benjamin Stanley Frohman (ORCID 0009-0006-7068-3718). All rights reserved.
-\documentclass[11pt, letterpaper]{article}
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[capitalize,nameinlink]{cleveref}
 
-% Required packages for math formatting and layout
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath, amssymb, amsthm}
-\usepackage{geometry}
-\geometry{margin=1in}
-\usepackage{hyperref}
+\lstdefinelanguage{Lean}{
+  morekeywords={def,theorem,lemma,structure,where,fun,Prop,Type,by,import,namespace,end,noncomputable,instance},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=Lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries\color{blue!60!black},
+  commentstyle=\itshape\color{gray}, columns=fullflexible, breaklines=true, frame=single,
+  extendedchars=true, inputencoding=utf8}
 
-% Define Theorem environments
-\newtheorem{theorem}{Theorem}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
 
-\title{Resolving a category error: $\mathrm{DHL}[3,2]$ yields $H_1 \le 6$, not $H_1=2$}
+\newcommand{\DHL}{\mathrm{DHL}}
+
+\title[DHL\texorpdfstring{$[3,2]$}{[3,2]} yields \texorpdfstring{$H_1\le 6$}{H1<=6}, not \texorpdfstring{$H_1=2$}{H1=2}]{Resolving a category error: \texorpdfstring{$\mathrm{DHL}[3,2]$}{DHL[3,2]} yields \texorpdfstring{$H_1 \le 6$}{H1 <= 6}, not \texorpdfstring{$H_1=2$}{H1 = 2}}
 \author{Benjamin Frohman}
-\date{September 2026}
+\email{frohmanbenjamin@gmail.com}
+\subjclass[2020]{Primary 11N05; Secondary 11N35, 03B35}
+\keywords{prime gaps, bounded gaps between primes, admissible tuples, Dickson--Hardy--Littlewood conjecture, parity barrier, twin prime conjecture, formal verification, Lean 4, Mathlib}
+\date{November 2026}
+\emergencystretch=3em
+
 
 \begin{document}
-
+\begin{abstract}
+Let $H_1=\liminf_{n\to\infty}(p_{n+1}-p_n)$. We record the precise logical relationship between the hypothesis $\DHL[3,2]$ and bounds on $H_1$. We prove that $\DHL[3,2]$ implies $H_1\le 6$; that $H_1\le 3$ is equivalent to $H_1=2$ (the twin prime conjecture); that the minimal diameter of an admissible $3$-tuple is exactly $6$; and, via an explicit model, that $\DHL[2,2]$ cannot be derived from the combinatorial form of $\DHL[3,2]$ alone. The parity barrier for square-of-divisor-sum sieves enters only as an explicitly stated hypothesis. We do not prove $\DHL[3,2]$ or the twin prime conjecture. All results are formalized in Lean~4 with Mathlib, without \texttt{sorry} and using only Lean's standard axioms.
+\end{abstract}
 \maketitle
 
-Let $H_1 = \liminf_{n\to\infty} (p_{n+1} - p_n)$. Write $\mathrm{DHL}[k,j]$ for the assertion that every admissible $k$-tuple of linear forms has infinitely many translates containing at least $j$ primes.
+\section{Introduction}\label{sec:intro}
 
-\textbf{Disclaimer:} This note does not prove the hypothesis $\mathrm{DHL}[3,2]$, nor does it prove $H_1=2$. It maps the strict logical implications of those statements. 
+Let $p_1=2<p_2=3<\dots$ denote the primes and $H_1=\liminf_{n\to\infty}(p_{n+1}-p_n)$. For an admissible $k$-tuple $\mathcal H$ (\cref{def:admissible}), the statement $\DHL[k,j]$ asserts that infinitely many translates $n+\mathcal H$ contain at least $j$ primes (\cref{def:dhl}).
 
-The implication $\mathrm{DHL}[3,2] \Rightarrow H_1 \le 6$ is elementary and unconditional. If at least two elements of an admissible 3-tuple of diameter 6 are prime for infinitely many translates, then infinitely many prime pairs differ by at most 6, and therefore $H_1 \le 6$. 
+Following Goldston, Pintz and Y{\i}ld{\i}r{\i}m~\cite{GPY}, Maynard~\cite{Maynard15} and the Polymath8b project~\cite{Polymath}, the unconditional bound $H_1\le 246$ is known, and $\DHL[3,2]$ is known conditionally on the generalized Elliott--Halberstam conjecture (GEH), yielding $H_1\le 6$ under GEH~\cite{Polymath}. A claimed improvement to $H_1\le 240$, attributed to a 2026 preprint of Stadlmann, is \textbf{[citation needed: unverified]} and is not used here.
 
-This is not the Twin Prime Conjecture. After the single odd prime gap $3-2=1$, every prime gap is even. Therefore, the inequality $H_1 \le 3$ is logically equivalent to $H_1 = 2$. The statement $\mathrm{DHL}[3,2]$ produces prime differences in the set $\{2,4,6\}$; it does not force the consecutive-gap limit inferior to equal 2. Conflating $\mathrm{DHL}[3,2]$ with $H_1 \le 3$ is a category error.
+The purpose of this note is to separate two statements that are sometimes conflated: $\DHL[3,2]\Rightarrow H_1\le 6$ (\cref{thm:main}), which is elementary, and $H_1=2$, the twin prime conjecture. Since every prime gap after $3-2$ is even (\cref{thm:gaps}), $H_1\le 3$ is equivalent to $H_1=2$, so reading $\DHL[3,2]$ as giving $H_1\le 3$ is a category error.
 
-The implication $\mathrm{DHL}[3,2] \Rightarrow H_1 \le 6$ does not require the generalized Elliott--Halberstam conjecture (GEH). However, the hypothesis $\mathrm{DHL}[3,2]$ itself is presently known only under GEH, which is how the conditional bound $H_1 \le 6$ is obtained. By the widely accepted parity barrier (going back to Selberg), standard square-of-divisor-sums sieve architectures are not expected to go below 6, even under GEH; in this note that barrier is used only as an explicit hypothesis (Theorem 4), not proved. 
+By the widely accepted parity barrier (going back to Selberg), standard square-of-divisor-sum sieves are not expected to go below $6$, even under GEH; in this note that barrier is used only as an explicit hypothesis (\cref{hyp:parity}), not proved.
 
-The long-standing unconditional bound remains Polymath8b (2014), which established $H_1 \le 246$ using the Maynard--Tao sieve on an admissible 50-tuple. A claimed improvement to $H_1 \le 240$, attributed to a 2026 preprint by Stadlmann, is \textbf{[citation needed: unverified]} and is not relied upon here. 
+\section{Preliminaries}\label{sec:prelim}
 
-The two statements that can be written without ambiguity are therefore:
-\begin{itemize}
-    \item $\mathrm{DHL}[3,2]$ (presently conditional on GEH) implies $H_1 \le 6$.
-    \item $H_1 = 2$ (the Twin Prime Conjecture).
-\end{itemize}
+\begin{definition}\label{def:admissible}
+A finite set $\mathcal H\subset\mathbb N$ is \emph{admissible} if for every prime $q$ there is a residue class modulo $q$ containing no element of $\mathcal H$.
+\end{definition}
 
-\vspace{0.5cm}
-\section*{Theorem 1: The trivial lower bound $H_1 \ge 2$}
+\begin{definition}\label{def:dhl}
+For a predicate $P$ on $\mathbb N$ and $k\ge j\ge1$, let $\DHL_P[k,j]$ be the statement: for every admissible $\mathcal H$ with $|\mathcal H|=k$ there are infinitely many $n$ such that $\#\{h\in\mathcal H: P(n+h)\}\ge j$. Write $\DHL[k,j]$ for $\DHL_P[k,j]$ with $P$ = primality.
+\end{definition}
 
-\begin{theorem}
-$H_1 \ge 2$. Consequently, any claim that $H_1 \le 3$ is exactly equivalent to $H_1 = 2$.
-\end{theorem}
+\begin{definition}\label{def:H1le}
+For $c\in\mathbb N$ write $H_1\le c$ for the statement that $p_{n+1}-p_n\le c$ for infinitely many $n$. For an integer-valued sequence this is equivalent to $\liminf_{n}(p_{n+1}-p_n)\le c$.
+\end{definition}
 
+\begin{lemma}\label{lem:adm}
+The sets $\{0,2\}$, $\{0,2,6\}$ and $\{0,4,6\}$ are admissible.
+\end{lemma}
 \begin{proof}
-The sequence of primes begins $p_1=2, p_2=3, p_3=5, p_4=7, \dots$. For the first pair, the consecutive gap is $p_2 - p_1 = 3 - 2 = 1$. Because $2$ is the only even prime, every prime $p_n$ for $n \ge 2$ is odd. The difference between any two odd integers is necessarily an even integer. 
-
-Since consecutive primes are distinct, $p_{n+1} - p_n > 0$. The smallest positive even integer is $2$. Therefore, for all $n \ge 2$, $p_{n+1} - p_n \ge 2$. Taking the limit inferior of this sequence yields $H_1 \ge 2$. Because the only integers in the interval $[2, 3]$ are $2$ and $3$, and $3$ is impossible for $n \ge 2$, $H_1 \le 3$ collapses to $H_1 = 2$. 
+For $q\ge7$ the elements are distinct residues below $q$ and the class $1$ is missed. For $q=2$ the class $1$ is missed. For $q=3$: $\{0,4,6\}\equiv\{0,1,0\}$ misses $2$; $\{0,2,6\}\equiv\{0,2,0\}$ and $\{0,2\}$ miss $1$. For $q=5$: $\{0,4,6\}\equiv\{0,4,1\}$ misses $2$; $\{0,2,6\}\equiv\{0,2,1\}$ misses $3$; $\{0,2\}$ misses $1$.
 \end{proof}
 
-\section*{Theorem 2: Proof of the implication $\mathrm{DHL}[3,2] \Rightarrow H_1 \le 6$}
+\section{Main results}\label{sec:main}
 
-\begin{theorem}
-Assume $\mathrm{DHL}[3,2]$. Then $H_1 \le 6$.
+\begin{theorem}\label{thm:gaps}
+For all $n\ge2$, $p_{n+1}-p_n\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\ge2$, and $H_1\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.
 \end{theorem}
-
 \begin{proof}
-By definition, $\mathrm{DHL}[3,2]$ asserts that every admissible 3-tuple has infinitely many translates containing at least two primes. Two equally narrow admissible 3-tuples exist, and both act as equal witnesses to this bound: $\mathcal{H}_1 = \{0, 2, 6\}$ and $\mathcal{H}_2 = \{0, 4, 6\}$.
-
-We first verify from first principles that $\mathcal{H}_2 = \{0, 4, 6\}$ is strictly admissible by confirming it does not occupy all residue classes for any prime $p$:
-\begin{itemize}
-    \item For $p=2$: The elements modulo 2 are $\{0, 0, 0\}$. The residue class $1 \pmod 2$ is omitted.
-    \item For $p=3$: The elements modulo 3 are $\{0, 1, 0\}$. The residue class $2 \pmod 3$ is omitted.
-    \item For $p \ge 5$: The tuple contains exactly 3 elements. Since $3 < p$, the Pigeonhole Principle dictates these elements can occupy at most 3 distinct residue classes. At least $p - 3 \ge 2$ residue classes modulo $p$ must remain empty.
-\end{itemize}
-
-Because $\mathcal{H}_2$ is admissible and has a diameter of $6 - 0 = 6$, the hypothesis $\mathrm{DHL}[3,2]$ guarantees that there exist infinitely many integers $n$ such that the translated tuple $(n, n+4, n+6)$ contains at least two primes. 
-
-For each such $n$, the two primes must manifest as one of the following pairs:
-\begin{itemize}
-    \item $(n, n+4)$, yielding a prime difference of $4$;
-    \item $(n+4, n+6)$, yielding a prime difference of $2$;
-    \item $(n, n+6)$, yielding a prime difference of $6$.
-\end{itemize}
-
-In all three cases, we obtain two primes $p$ and $q$ ($p < q$) satisfying $q - p \le 6$. Write $p = p_k$. The next prime after $p$ is at most $q$, since $q$ itself is a prime larger than $p$; hence $p_{k+1} - p_k \le q - p \le 6$. Moreover $p \ge n$, so as $n$ grows the index $k$ is unbounded.
-
-Because this translates infinitely often across unbounded $n$, the sequence of such index pairs $(k, k+1)$ is unbounded. The occurrences of gaps $p_{k+1}-p_k \le 6$ are not confined to a finite initial segment of the primes. Therefore, by the formal definition of the limit inferior,
-\[
-    H_1 = \liminf_{k\to\infty} (p_{k+1} - p_k) \le 6.
-\]
-This completes the proof. 
+For $n\ge2$, $p_n$ and $p_{n+1}$ are odd and distinct, so their difference is a positive even integer. Hence a gap $\le3$ with $n\ge2$ equals $2$; the only gap equal to $1$ is $p_2-p_1$.
 \end{proof}
 
-\section*{Theorem 3: $\mathrm{DHL}[2,2]$ does not follow from the combinatorial form of $\mathrm{DHL}[3,2]$}
-
-For a predicate $P$ on $\mathbb{N}$, write $\mathrm{DHL}_P[k,j]$ for the statement obtained from $\mathrm{DHL}[k,j]$ by replacing ``prime'' with ``satisfies $P$''.
-
-\begin{theorem}
-Let $P(n)$ hold iff $n \bmod 4 \in \{0,1\}$. Then $\mathrm{DHL}_P[3,2]$ holds (indeed for every 3-element set, in particular $\{0,2,6\}$ and $\{0,4,6\}$), while $P(n)\wedge P(n+2)$ holds for no $n$; hence $\mathrm{DHL}_P[2,2]$ fails, because $\{0,2\}$ is admissible.
+\begin{theorem}\label{thm:main}
+$\DHL[3,2]$ implies $H_1\le6$.
 \end{theorem}
-
 \begin{proof}
-$P$ never contains two integers differing by $2$, since such integers have residues differing by $2 \pmod 4$. For any $d \not\equiv 2 \pmod 4$, $P$ contains infinitely many pairs $(m, m+d)$: take $m \equiv 0 \pmod 4$ if $d \equiv 0, 1$ and $m \equiv 1$ if $d \equiv 3$. Among three distinct integers $a<b<c$, the differences $b-a$ and $c-b$ cannot both be $\equiv 2 \pmod 4$ without $c-a \equiv 0$. So some pair in the set has a difference $\not\equiv 2 \pmod 4$, and that pair is hit infinitely often.
+By \cref{lem:adm}, $\{0,4,6\}$ is admissible, so $\DHL[3,2]$ gives infinitely many $n$ such that at least two of $n,n+4,n+6$ are prime. For each such $n$ we obtain primes $p<q$ with $q-p\in\{2,4,6\}$ and $p\ge n$. Write $p=p_k$. Since $q$ is a prime larger than $p$, the next prime satisfies $p_{k+1}\le q$, so $p_{k+1}-p_k\le q-p\le6$. As $p\ge n$ and $n$ is unbounded, so is $k$.
 \end{proof}
 
-\textbf{Scope.} This shows only that no proof of $\mathrm{DHL}[3,2] \Rightarrow \mathrm{DHL}[2,2]$ can use the combinatorial form of $\mathrm{DHL}[3,2]$ alone; any such proof must use further properties of the primes. It is \emph{not} an independence result for the actual primes. $\mathrm{DHL}[3,2]$ is fully compatible with $H_1=2$.
+\begin{theorem}\label{thm:model}
+Let $P(n)$ hold if and only if $n\bmod4\in\{0,1\}$. Then $\DHL_P[3,2]$ holds (indeed for every $3$-element set), but $P(n)\wedge P(n+2)$ holds for no $n$; in particular $\DHL_P[2,2]$ fails.
+\end{theorem}
+\begin{proof}
+Integers differing by $2$ have residues differing by $2$ modulo $4$, so they are never both in $P$. If $d\not\equiv2\pmod4$, then $P(m)\wedge P(m+d)$ for all $m\equiv0\pmod 4$ when $d\equiv0,1$, and for all $m\equiv1\pmod4$ when $d\equiv3$. For $a<b<c$, the differences $b-a$ and $c-b$ cannot both be $\equiv2\pmod4$, since then $c-a\equiv0$. So some pair in the set has a difference $\not\equiv2\pmod 4$ and is hit infinitely often. Finally, $\{0,2\}$ is admissible by \cref{lem:adm}.
+\end{proof}
 
-\section*{Theorem 4: The parity hypothesis and the minimal diameter 6}
+\begin{remark}\label{rem:model}
+\Cref{thm:model} shows only that no proof of $\DHL[3,2]\Rightarrow\DHL[2,2]$ can rely on the combinatorial form of $\DHL[3,2]$ alone. It is \emph{not} an independence result for the primes, and $\DHL[3,2]$ is compatible with $H_1=2$.
+\end{remark}
 
-\textbf{Parity hypothesis (assumed, not proved).} Following the parity discussion in the Polymath8b project, we \emph{assume} the following of a given sieve method: whenever it establishes $\mathrm{DHL}[k,j]$, then $j \le \lceil k/2 \rceil$. We use this only as an explicit hypothesis about square-of-divisor-sum sieve architectures, not as a theorem.
+\begin{hypothesis}[Parity barrier]\label{hyp:parity}
+A given sieve method establishes $\DHL[k,j]$ only if $j\le\lceil k/2\rceil$.
+\end{hypothesis}
 
-\begin{theorem}
+This hypothesis reflects the parity discussion in~\cite{Polymath} for square-of-divisor-sum weights. It is assumed, not proved.
+
+\begin{theorem}\label{thm:parity}
+\leavevmode
 \begin{enumerate}
-  \item Under the parity hypothesis, a sieve establishing $\mathrm{DHL}[k,2]$ must have $k \ge 3$.
-  \item (Unconditional.) Every admissible 3-element set $\mathcal{H}\subset\mathbb{N}$ has diameter at least $6$, and $\{0,2,6\}$, $\{0,4,6\}$ attain it. So the minimal diameter of an admissible 3-tuple is exactly $6$.
+\item Under \cref{hyp:parity}, a sieve method establishing $\DHL[k,2]$ has $k\ge3$.
+\item (Unconditional.) No admissible $3$-element set is contained in an interval $[a,a+5]$. Together with \cref{lem:adm}, the minimal diameter of an admissible $3$-set is exactly $6$.
 \end{enumerate}
 \end{theorem}
-
 \begin{proof}
-(1) $2 \le \lceil k/2\rceil$ forces $k \ge 3$. (2) Admissibility at $2$ forces all three elements to share a parity. If the diameter were at most $5$, the elements would be $m, m+2, m+4$, which occupy all residues mod $3$, contradicting admissibility at $3$.
+(1) $2\le\lceil k/2\rceil$ forces $k\ge3$. (2) Admissibility modulo $2$ forces the three elements to share a parity. If they lie in an interval of length $5$, any two differ by $2$ or $4$, so they are pairwise distinct modulo $3$ and cover all residues modulo $3$, contradicting admissibility modulo $3$.
 \end{proof}
 
-Under the parity hypothesis, sieve methods of this type therefore cannot get below $H_1 \le 6$ via $\mathrm{DHL}[k,2]$.
+\section{Formal verification}\label{sec:lean}
 
-\section*{The Frontier: Deploying Parity-Detecting Techniques}
+All results above are formalized in Lean~4 with Mathlib~\cite{Mathlib} in the repository \url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6}. The development contains no \texttt{sorry}; \texttt{\#print axioms} reports only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. Primes are indexed from $0$ in Lean ($p_0=2$). Key definitions and statements (rendered here in ASCII notation; the source uses Lean's Unicode symbols):
 
-If a future manuscript claims to prove the Twin Prime Conjecture ($H_1=2$), its validity can be immediately triaged by locating its approach to the parity obstruction. A standard GPY/Maynard--Tao square-of-divisor-sums argument cannot achieve it alone.
+\begin{lstlisting}
+def H1Le (c : Nat) : Prop := forall N, exists n, n >= N /\ gap n <= c
+def Admissible (H : Finset Nat) : Prop :=
+  forall q, q.Prime -> exists r < q, forall h in H, h % q != r
+def DHL (k j : Nat) : Prop :=
+  forall H : Finset Nat, H.card = k -> Admissible H ->
+    forall N, exists n, n >= N /\ j <= (H.filter (fun h => (n + h).Prime)).card
 
-A genuine proof needs an ingredient that explicitly distinguishes integers with $\Omega(n) = 1$ from those with $\Omega(n) = 2$. In other contexts of analytic number theory, mathematicians have successfully deployed precise parity-detecting capabilities by decomposing the von Mangoldt function via combinatorial identities and estimating the resulting multi-linear forms. 
+theorem dhl32_H1Le_six (h : DHL 3 2) : H1Le 6
+theorem H1Le_three_iff_twin : H1Le 3 <-> forall N, exists n, n >= N /\ gap n = 2
+theorem dhl32_not_implies_dhl22_combinatorially :
+  exists (P : Nat -> Prop) (_ : DecidablePred P),
+    DHLfor P 3 2 /\ (forall n, Not (P n /\ P (n + 2))) /\ Not DHLfor P 2 2
+structure ParityBarrier (Proves : Nat -> Nat -> Prop) : Prop where
+  bound : forall k j, Proves k j -> j <= (k + 1) / 2
+\end{lstlisting}
 
-Notable examples of arguments that overcome or sidestep parity-type limitations include:
+{\raggedright
+\noindent Correspondence with the text:
 \begin{itemize}
-    \item \textbf{Friedlander and Iwaniec (1997):} Proved the existence of infinitely many primes of the form $x^2 + y^4$ by successfully bounding Type II (bilinear) sums to bypass the parity obstruction in two-dimensional geometries.
-    \item \textbf{Maynard (2019):} Proved there are infinitely many primes with missing digits using Fourier-analytic control of Type I and Type II sums over restricted digit sets. This is a related use of bilinear-sum technology rather than a direct parity-breaking result of the Friedlander--Iwaniec kind.
-\end{itemize}
+\item \cref{lem:adm}: \texttt{admissible\_02}, \texttt{admissible\_026}, \texttt{admissible\_046}.
+\item \cref{thm:gaps}: \texttt{two\_le\_gap}, \texttt{not\_H1Le\_one}, \texttt{H1Le\_three\_iff\_two}, \texttt{H1Le\_three\_iff\_twin}.
+\item \cref{thm:main}: \texttt{dhl32\_H1Le\_six}.
+\item \cref{thm:model}: \texttt{Ptoy\_DHL32}, \texttt{dhl32\_not\_implies\_dhl22\_combinatorially}.
+\item \cref{thm:parity}: \texttt{ParityBarrier}, \texttt{parity\_two\_needs\_three}, \texttt{admissible\_three\_diam\_ge\_six}, \texttt{min\_diam\_admissible\_three}.
+\end{itemize}\par}
+Statements from the literature (the bound $246$, the conditional status of $\DHL[3,2]$, and the unverified Stadlmann claim) are not formalized.
 
-To progress from a bounded gap of 6 to a bounded gap of 2, a proof must exhibit this shape: it must successfully inject parity-breaking bilinear forms (Type II sums) directly into the linear geometry of bounded prime gaps. Until a technique exhibiting this precise capability is successfully deployed, sieving on $k=3$ forms remains the minimum viable dimension, and $H_1 \le 6$ remains the floor for the GPY/Maynard--Tao sieve architecture under the parity hypothesis.
+\section{Discussion}\label{sec:discussion}
 
-\section*{Formal verification in Lean 4}
-All theorems above are machine-checked in Lean 4 + Mathlib (no \texttt{sorry}, no axioms beyond Lean's standard \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}) in
-\url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6}. Here $H_1 \le c$ is encoded as ``$p_{n+1}-p_n \le c$ for infinitely many $n$''.
-\begin{itemize}
-  \item Theorem 1: \texttt{DHL32.two\_le\_gap}, \texttt{DHL32.not\_H1Le\_one}, \texttt{DHL32.H1Le\_three\_iff\_two}, \texttt{DHL32.H1Le\_three\_iff\_twin}.
-  \item Admissibility: \texttt{DHL32.admissible\_046}, \texttt{DHL32.admissible\_026}, \texttt{DHL32.admissible\_02}.
-  \item Theorem 2: \texttt{DHL32.dhl32\_H1Le\_six}.
-  \item Theorem 3: \texttt{DHL32.dhl32\_not\_implies\_dhl22\_combinatorially}, \texttt{DHL32.Ptoy\_DHL32}.
-  \item Theorem 4: \texttt{DHL32.ParityBarrier} (hypothesis structure), \texttt{DHL32.parity\_two\_needs\_three}, \texttt{DHL32.admissible\_three\_diam\_ge\_six}, \texttt{DHL32.min\_diam\_admissible\_three}.
-\end{itemize}
-Literature statements (Polymath8b's $246$, the unverified Stadlmann claim, GEH conditionality of $\mathrm{DHL}[3,2]$) are not formalized.
+A proof of $H_1=2$ must go beyond the combinatorial content of $\DHL[3,2]$ (\cref{rem:model}) and, if it is sieve-theoretic, must overcome the limitation recorded in \cref{hyp:parity}. Arguments that overcome or sidestep parity-type limitations exist in other settings. Friedlander and Iwaniec~\cite{FI} showed that $X^2+Y^4$ represents infinitely many primes, using bilinear (Type~II) estimates to overcome the parity obstruction. Maynard~\cite{Maynard19} proved that there are infinitely many primes with a restricted digit, using Fourier-analytic control of Type~I and Type~II sums; this is a related use of bilinear-sum methods rather than a direct parity-breaking result of the Friedlander--Iwaniec kind. Until such an ingredient is brought to bear on prime gaps, $\DHL[3,2]$ and $H_1\le6$ remain the natural limit of the GPY/Maynard--Tao method under \cref{hyp:parity}.
+
+\begin{thebibliography}{9}
+\bibitem{FI} J.~Friedlander and H.~Iwaniec, \emph{The polynomial $X^2+Y^4$ captures its primes}, Ann.\ of Math.\ (2) \textbf{148} (1998), no.~3, 945--1040.
+\bibitem{GPY} D.~A.~Goldston, J.~Pintz and C.~Y.~Y{\i}ld{\i}r{\i}m, \emph{Primes in tuples I}, Ann.\ of Math.\ (2) \textbf{170} (2009), no.~2, 819--862.
+\bibitem{Maynard15} J.~Maynard, \emph{Small gaps between primes}, Ann.\ of Math.\ (2) \textbf{181} (2015), no.~1, 383--413.
+\bibitem{Maynard19} J.~Maynard, \emph{Primes with restricted digits}, Invent.\ Math.\ \textbf{217} (2019), no.~1, 127--218.
+\bibitem{Mathlib} The mathlib Community, \emph{The Lean mathematical library}, in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020), ACM, 2020, 367--381.
+\bibitem{Polymath} D.~H.~J.~Polymath, \emph{Variants of the Selberg sieve, and bounded intervals containing many primes}, Res.\ Math.\ Sci.\ \textbf{1} (2014), Art.~12, 83~pp.
+\end{thebibliography}
 
 \end{document}
