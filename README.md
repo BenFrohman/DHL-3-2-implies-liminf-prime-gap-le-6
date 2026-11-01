@@ -65,3 +65,5 @@ lake exe cache get   # download prebuilt Mathlib
 lake build
 lake env lean AxiomAudit.lean   # prints axioms used
 ```
+
+Copyright © 2026 Benjamin Stanley Frohman (ORCID [0009-0006-7068-3718](https://orcid.org/0009-0006-7068-3718)). All rights reserved.
