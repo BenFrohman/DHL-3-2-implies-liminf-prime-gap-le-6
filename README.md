@@ -66,4 +66,4 @@ lake build
 lake env lean AxiomAudit.lean   # prints axioms used
 ```
 
-Copyright © 2026 Benjamin Stanley Frohman (ORCID [0009-0006-7068-3718](https://orcid.org/0009-0006-7068-3718)). All rights reserved.
+Copyright © 2026 Benjamin Stanley Frohman (ORCID [0009-0006-7068-3718](https://orcid.org/0009-0006-7068-3718)). Licensed under the [Apache License, Version 2.0](LICENSE); see [NOTICE](NOTICE).
