@@ -1,10 +1,14 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it using the metadata below."
-title: "Lean 4/Mathlib proof (no sorry): DHL[3,2] implies consecutive prime gaps <= 6 infinitely often (H1<=6); plus H1<=3 iff twin primes, min admissible 3-tuple diameter 6, combinatorial non-implication DHL[3,2]->DHL[2,2]"
+title: "Resolving a category error: DHL[3,2] yields H_1 ≤ 6, not H_1 = 2"
 authors:
   - family-names: "Frohman"
-    given-names: "Benjamin Stanley"
+    given-names: "Benjamin"
     orcid: "https://orcid.org/0009-0006-7068-3718"
     email: "frohmanbenjamin@gmail.com"
+type: software
 repository-code: "https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6"
 license: Apache-2.0
+version: "1.1"
+date-released: "2026-11-01"
+keywords: ["prime gaps", "DHL[3,2]", "twin prime conjecture", "Lean 4", "Mathlib"]

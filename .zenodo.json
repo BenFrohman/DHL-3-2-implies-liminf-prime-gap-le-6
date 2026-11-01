@@ -1,0 +1,31 @@
+{
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "title": "Resolving a category error: DHL[3,2] yields H_1 ≤ 6, not H_1 = 2",
+  "description": "<p>We show, assuming the Dickson–Hardy–Littlewood-type hypothesis DHL[3,2] (currently known only conditionally, under GEH), that infinitely many consecutive prime gaps are at most 6, i.e. H_1 ≤ 6. This note does not prove DHL[3,2] or the Twin Prime Conjecture. We also prove unconditionally that every consecutive prime gap after 3 − 2 is at least 2, so H_1 ≤ 3 is equivalent to H_1 = 2 (twin primes), and that the minimal diameter of an admissible 3-tuple is 6. A toy-predicate model shows DHL[2,2] cannot be derived from the combinatorial form of DHL[3,2] alone (not an independence result for the primes). The parity barrier is used only as an explicit hypothesis. All results are formalized in Lean 4 + Mathlib with no sorry and only Lean's standard axioms.</p>",
+  "creators": [
+    {
+      "name": "Frohman, Benjamin",
+      "orcid": "0009-0006-7068-3718"
+    }
+  ],
+  "keywords": [
+    "prime gaps",
+    "bounded gaps between primes",
+    "DHL[3,2]",
+    "twin prime conjecture",
+    "admissible tuples",
+    "parity barrier",
+    "Lean 4",
+    "Mathlib",
+    "formal verification"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "license": "Apache-2.0"
+}
