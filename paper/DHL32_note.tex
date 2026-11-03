@@ -154,6 +154,62 @@ Statements from the literature (the bound $246$, the conditional status of $\DHL
 
 A proof of $H_1=2$ must go beyond the combinatorial content of $\DHL[3,2]$ (\cref{rem:model}) and, if it is sieve-theoretic, must overcome the limitation recorded in \cref{hyp:parity}. Arguments that overcome or sidestep parity-type limitations exist in other settings. Friedlander and Iwaniec~\cite{FI} showed that $X^2+Y^4$ represents infinitely many primes, using bilinear (Type~II) estimates to overcome the parity obstruction. Maynard~\cite{Maynard19} proved that there are infinitely many primes with a restricted digit, using Fourier-analytic control of Type~I and Type~II sums; this is a related use of bilinear-sum methods rather than a direct parity-breaking result of the Friedlander--Iwaniec kind. Until such an ingredient is brought to bear on prime gaps, $\DHL[3,2]$ and $H_1\le6$ remain the natural limit of the GPY/Maynard--Tao method under \cref{hyp:parity}.
 
+
+\appendix
+\section{Verification certificate}\label{app:cert}
+
+The formal development accompanying this note was machine-checked as follows.
+
+{\raggedright
+\begin{itemize}
+\item Repository:\\ {\footnotesize\url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6}}
+\item Verified commit:\\ {\footnotesize\texttt{755573b52bde4b3e49b4d7179315b0c024cafa42}}
+\item Lean toolchain: \texttt{leanprover/lean4:v4.30.0-rc1}
+\item Mathlib: tag \texttt{v4.30.0-rc1}, commit (from \texttt{lake-manifest.json})\\ {\footnotesize\texttt{0c154d67103f74be3a0f2c509f72ccbf5be9f2a7}}
+\item Continuous integration run (build, axiom audit, \texttt{sorry}/\texttt{axiom} scan; passed):\\ {\footnotesize\url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/41563402336}}
+\item SHA-256 of the source tarball of the verified commit
+(\href{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/archive/755573b52bde4b3e49b4d7179315b0c024cafa42.tar.gz}{\texttt{archive/755573b.tar.gz}} on GitHub):\\
+{\footnotesize\texttt{c6c8e5d1772049634c4b17a665a3fffad986a3b73dce3ad1f920eb0078c5f7f3}}
+\end{itemize}\par}
+
+The tarball hash refers to the verified commit rather than to the release tag, since the tag also contains this paper and a document cannot contain the hash of an archive that includes itself. The Lean sources (\texttt{DHL32/}, \texttt{AxiomAudit.lean}, \texttt{lakefile.lean}, \texttt{lean-toolchain}, \texttt{lake-manifest.json}) are unchanged between that commit and the release tag.
+
+\textbf{The development contains no \texttt{sorry} and no user-declared axioms.} Every theorem and lemma depends only on Lean's standard axioms \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The table below is the verbatim output of \texttt{lake env lean AxiomAudit.lean} (\texttt{\#print axioms}) from a fresh run on the verified commit.
+
+\begin{center}\footnotesize
+\begin{tabular}{ll}
+\hline
+Lean declaration & \texttt{\#print axioms} \\
+\hline
+\texttt{DHL32.p\_strictMono} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_prime} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_zero} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_odd} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.two\_le\_gap} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.gap\_even} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.not\_H1Le\_one} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.H1Le\_three\_iff\_two} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.H1Le\_three\_iff\_twin} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.residues\_small} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.admissible\_046} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.admissible\_026} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.gap\_le\_of\_primes} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.dhl32\_H1Le\_six} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.DHLfor\_prime} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_no\_twin} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_hit} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_hit\textquotesingle{}} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_DHL32} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.admissible\_02} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.dhl32\_not\_implies\_dhl22\_combinatorially} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.parity\_two\_needs\_three} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.admissible\_three\_diam\_ge\_six} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.min\_diam\_admissible\_three} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.parity\_floor} & \texttt{[propext, Quot.sound]} \\
+\hline
+\end{tabular}
+\end{center}
+
 \begin{thebibliography}{9}
 \bibitem{FI} J.~Friedlander and H.~Iwaniec, \emph{The polynomial $X^2+Y^4$ captures its primes}, Ann.\ of Math.\ (2) \textbf{148} (1998), no.~3, 945--1040.
 \bibitem{GPY} D.~A.~Goldston, J.~Pintz and C.~Y.~Y{\i}ld{\i}r{\i}m, \emph{Primes in tuples I}, Ann.\ of Math.\ (2) \textbf{170} (2009), no.~2, 819--862.
