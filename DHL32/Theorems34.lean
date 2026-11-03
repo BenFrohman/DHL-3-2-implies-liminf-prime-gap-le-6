@@ -26,6 +26,10 @@ def Ptoy (n : ℕ) : Prop := n % 4 < 2
 
 instance : DecidablePred Ptoy := fun n => inferInstanceAs (Decidable (n % 4 < 2))
 
+/-- `Ptoy` in the paper's wording (Theorem 3.3): `P(n)` iff `n mod 4 ∈ {0,1}`. -/
+lemma Ptoy_iff_mod_four_mem (n : ℕ) : Ptoy n ↔ n % 4 ∈ ({0, 1} : Finset ℕ) := by
+  simp only [Ptoy, Finset.mem_insert, Finset.mem_singleton]; omega
+
 lemma Ptoy_no_twin (n : ℕ) : ¬ (Ptoy n ∧ Ptoy (n + 2)) := by
   unfold Ptoy; omega
 
