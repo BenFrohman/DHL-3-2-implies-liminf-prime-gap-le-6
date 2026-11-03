@@ -16,6 +16,7 @@ import DHL32
 #print axioms DHL32.dhl32_H1Le_six
 #print axioms DHL32.DHLfor_prime
 #print axioms DHL32.Ptoy_no_twin
+#print axioms DHL32.Ptoy_iff_mod_four_mem
 #print axioms DHL32.Ptoy_hit
 #print axioms DHL32.Ptoy_hit'
 #print axioms DHL32.Ptoy_DHL32
