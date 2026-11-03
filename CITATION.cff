@@ -11,8 +11,11 @@ repository-code: "https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap
 license: Apache-2.0
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.23931800"
+    description: "Reserved DOI for the final paper PDF (Zenodo draft, NOT YET PUBLISHED; does not resolve until published)"
+  - type: doi
     value: "10.5281/zenodo.23931656"
-    description: "Reserved DOI for v1.4 final paper (Zenodo draft, NOT YET PUBLISHED; will not resolve until published)"
+    description: "Published Zenodo record for GitHub release v1.4 (auto-created by GitHub integration)"
   - type: doi
     value: "10.5281/zenodo.23845116"
     description: "Zenodo concept DOI (all versions)"
