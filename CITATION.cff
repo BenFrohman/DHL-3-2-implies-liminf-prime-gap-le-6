@@ -3,7 +3,7 @@ message: "If you use this work, please cite it using the metadata below."
 title: "Resolving a category error: DHL[3,2] yields H_1 ≤ 6, not H_1 = 2"
 authors:
   - family-names: "Frohman"
-    given-names: "Benjamin"
+    given-names: "Benjamin Stanley"
     orcid: "https://orcid.org/0009-0006-7068-3718"
     email: "frohmanbenjamin@gmail.com"
 type: software
