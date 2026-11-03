@@ -1,0 +1,30 @@
+name: Lean build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Get Mathlib cache
+        run: lake exe cache get
+      - name: Build
+        run: lake build
+      - name: Axiom audit
+        run: lake env lean AxiomAudit.lean | tee axioms.txt
+      - name: Check axioms are standard only
+        run: |
+          if grep -v "depends on axioms: \[\(propext\|Classical.choice\|Quot.sound\)\(, \(propext\|Classical.choice\|Quot.sound\)\)*\]" axioms.txt | grep -q .; then
+            echo "Non-standard axiom output:"; cat axioms.txt; exit 1; fi
+      - name: No sorry / no axiom declarations
+        run: |
+          if grep -rnE "\bsorry\b|^\s*axiom\s" --include='*.lean' DHL32 DHL32.lean; then
+            echo "Found sorry or axiom declaration"; exit 1; fi
