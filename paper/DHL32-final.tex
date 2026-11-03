@@ -1,0 +1,262 @@
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[capitalize,nameinlink]{cleveref}
+
+\lstdefinelanguage{Lean}{
+  morekeywords={def,theorem,lemma,structure,where,fun,Prop,Type,by,import,namespace,end,noncomputable,instance},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=Lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries\color{blue!60!black},
+  commentstyle=\itshape\color{gray}, columns=fullflexible, breaklines=true, frame=single,
+  extendedchars=true, inputencoding=utf8}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\DHL}{\mathrm{DHL}}
+
+\title[DHL\texorpdfstring{$[3,2]$}{[3,2]} yields \texorpdfstring{$H_1\le 6$}{H1<=6}, not \texorpdfstring{$H_1=2$}{H1=2}]{Resolving a category error: \texorpdfstring{$\mathrm{DHL}[3,2]$}{DHL[3,2]} yields \texorpdfstring{$H_1 \le 6$}{H1 <= 6}, not \texorpdfstring{$H_1=2$}{H1 = 2}}
+\author{Benjamin Stanley Frohman}
+\address{ORCID: \href{https://orcid.org/0009-0006-7068-3718}{0009-0006-7068-3718}}
+\email{frohmanbenjamin@gmail.com}
+\subjclass[2020]{Primary 11N05; Secondary 11N35, 03B35}
+\keywords{prime gaps, bounded gaps between primes, admissible tuples, Dickson--Hardy--Littlewood conjecture, parity barrier, twin prime conjecture, formal verification, Lean 4, Mathlib}
+\date{3 November 2026. Final version (repository tag \texttt{v1.4}). DOI reserved, not yet published: \texttt{10.5281/zenodo.23931656}}
+\emergencystretch=3em
+
+
+\begin{document}
+\begin{abstract}
+Let $H_1=\liminf_{n\to\infty}(p_{n+1}-p_n)$. We record the precise logical relationship between the hypothesis $\DHL[3,2]$ and bounds on $H_1$. We prove that $\DHL[3,2]$ implies $H_1\le 6$; that $H_1\le 3$ is equivalent to $H_1=2$ (the twin prime conjecture); that the minimal diameter of an admissible $3$-tuple is exactly $6$; and, via an explicit model, that $\DHL[2,2]$ cannot be derived from the combinatorial form of $\DHL[3,2]$ alone. The parity barrier for square-of-divisor-sum sieves enters only as an explicitly stated hypothesis. We do not prove $\DHL[3,2]$ or the twin prime conjecture. All results are formalized in Lean~4 with Mathlib, without \texttt{sorry} and using only Lean's standard axioms. This is the final version of the note: every result is stated to match a named Lean declaration, whose file and line are given in \cref{sec:formal}. The main result is conditional on $\DHL[3,2]$, an open conjecture, and the paper does not remove that hypothesis.
+\end{abstract}
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+Let $p_1=2<p_2=3<\dots$ denote the primes and $H_1=\liminf_{n\to\infty}(p_{n+1}-p_n)$. For an admissible $k$-tuple $\mathcal H$ (\cref{def:admissible}), the statement $\DHL[k,j]$ asserts that infinitely many translates $n+\mathcal H$ contain at least $j$ primes (\cref{def:dhl}).
+
+Following Goldston, Pintz and Y{\i}ld{\i}r{\i}m~\cite{GPY}, Maynard~\cite{Maynard15} and the Polymath8b project~\cite{Polymath}, the unconditional bound $H_1\le 246$ is known, and $\DHL[3,2]$ is known conditionally on the generalized Elliott--Halberstam conjecture (GEH), yielding $H_1\le 6$ under GEH~\cite{Polymath}. A claimed improvement to $H_1\le 240$, attributed to a 2026 preprint of Stadlmann, is \textbf{[citation needed: unverified]} and is not used here.
+
+The purpose of this note is to separate two statements that are sometimes conflated: $\DHL[3,2]\Rightarrow H_1\le 6$ (\cref{thm:main}), which is elementary, and $H_1=2$, the twin prime conjecture. Since every prime gap after $3-2$ is even (\cref{thm:gaps}), $H_1\le 3$ is equivalent to $H_1=2$, so reading $\DHL[3,2]$ as giving $H_1\le 3$ is a category error.
+
+By the widely accepted parity barrier (going back to Selberg), standard square-of-divisor-sum sieves are not expected to go below $6$, even under GEH; in this note that barrier is used only as an explicit hypothesis (\cref{hyp:parity}), not proved.
+
+\section{Preliminaries}\label{sec:prelim}
+
+\begin{definition}\label{def:admissible}
+A finite set $\mathcal H\subset\mathbb N$ is \emph{admissible} if for every prime $q$ there is a residue class modulo $q$ containing no element of $\mathcal H$.
+\end{definition}
+
+\begin{definition}\label{def:dhl}
+For a predicate $P$ on $\mathbb N$ and $k\ge j\ge1$, let $\DHL_P[k,j]$ be the statement: for every admissible $\mathcal H$ with $|\mathcal H|=k$ there are infinitely many $n$ such that $\#\{h\in\mathcal H: P(n+h)\}\ge j$. Write $\DHL[k,j]$ for $\DHL_P[k,j]$ with $P$ = primality.
+\end{definition}
+
+\begin{definition}\label{def:H1le}
+For $c\in\mathbb N$ write $H_1\le c$ for the statement that $p_{n+1}-p_n\le c$ for infinitely many $n$. For an integer-valued sequence this is equivalent to $\liminf_{n}(p_{n+1}-p_n)\le c$.
+\end{definition}
+
+\begin{lemma}\label{lem:adm}
+The sets $\{0,2\}$, $\{0,2,6\}$ and $\{0,4,6\}$ are admissible.
+\end{lemma}
+\begin{proof}
+For $q\ge7$ the elements are distinct residues below $q$ and the class $1$ is missed. For $q=2$ the class $1$ is missed. For $q=3$: $\{0,4,6\}\equiv\{0,1,0\}$ misses $2$; $\{0,2,6\}\equiv\{0,2,0\}$ and $\{0,2\}$ miss $1$. For $q=5$: $\{0,4,6\}\equiv\{0,4,1\}$ misses $2$; $\{0,2,6\}\equiv\{0,2,1\}$ misses $3$; $\{0,2\}$ misses $1$.
+\end{proof}
+
+\section{Main results}\label{sec:main}
+
+\begin{theorem}\label{thm:gaps}
+For all $n\ge2$, $p_{n+1}-p_n\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\ge2$, and $H_1\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.
+\end{theorem}
+\begin{proof}
+For $n\ge2$, $p_n$ and $p_{n+1}$ are odd and distinct, so their difference is a positive even integer. Hence a gap $\le3$ with $n\ge2$ equals $2$; the only gap equal to $1$ is $p_2-p_1$.
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+$\DHL[3,2]$ implies $H_1\le6$.
+\end{theorem}
+\begin{proof}
+By \cref{lem:adm}, $\{0,4,6\}$ is admissible, so $\DHL[3,2]$ gives infinitely many $n$ such that at least two of $n,n+4,n+6$ are prime. For each such $n$ we obtain primes $p<q$ with $q-p\in\{2,4,6\}$ and $p\ge n$. Write $p=p_k$. Since $q$ is a prime larger than $p$, the next prime satisfies $p_{k+1}\le q$, so $p_{k+1}-p_k\le q-p\le6$. As $p\ge n$ and $n$ is unbounded, so is $k$.
+\end{proof}
+
+\begin{theorem}\label{thm:model}
+Let $P(n)$ hold if and only if $n\bmod4\in\{0,1\}$ (in Lean \texttt{Ptoy n := n \% 4 < 2}; the paper's wording is the kernel-checked equivalent \texttt{Ptoy\_iff\_mod\_four\_mem}). Then $\DHL_P[3,2]$ holds (indeed for every $3$-element set), but $P(n)\wedge P(n+2)$ holds for no $n$; in particular $\DHL_P[2,2]$ fails.
+\end{theorem}
+\begin{proof}
+Integers differing by $2$ have residues differing by $2$ modulo $4$, so they are never both in $P$. If $d\not\equiv2\pmod4$, then $P(m)\wedge P(m+d)$ for all $m\equiv0\pmod 4$ when $d\equiv0,1$, and for all $m\equiv1\pmod4$ when $d\equiv3$. For $a<b<c$, the differences $b-a$ and $c-b$ cannot both be $\equiv2\pmod4$, since then $c-a\equiv0$. So some pair in the set has a difference $\not\equiv2\pmod 4$ and is hit infinitely often. Finally, $\{0,2\}$ is admissible by \cref{lem:adm}.
+\end{proof}
+
+\begin{remark}\label{rem:model}
+\Cref{thm:model} shows only that no proof of $\DHL[3,2]\Rightarrow\DHL[2,2]$ can rely on the combinatorial form of $\DHL[3,2]$ alone. It is \emph{not} an independence result for the primes, and $\DHL[3,2]$ is compatible with $H_1=2$.
+\end{remark}
+
+\begin{hypothesis}[Parity barrier]\label{hyp:parity}
+A given sieve method establishes $\DHL[k,j]$ only if $j\le\lceil k/2\rceil$.
+\end{hypothesis}
+
+This hypothesis reflects the parity discussion in~\cite{Polymath} for square-of-divisor-sum weights. It is assumed, not proved.
+
+\begin{theorem}\label{thm:parity}
+\leavevmode
+\begin{enumerate}
+\item Under \cref{hyp:parity}, a sieve method establishing $\DHL[k,2]$ has $k\ge3$.
+\item (Unconditional.) No admissible $3$-element set is contained in an interval $[a,a+5]$. Together with \cref{lem:adm}, the minimal diameter of an admissible $3$-set is exactly $6$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(1) $2\le\lceil k/2\rceil$ forces $k\ge3$. (2) Admissibility modulo $2$ forces the three elements to share a parity. If they lie in an interval of length $5$, any two differ by $2$ or $4$, so they are pairwise distinct modulo $3$ and cover all residues modulo $3$, contradicting admissibility modulo $3$.
+\end{proof}
+
+\section{Formal verification}\label{sec:lean}
+
+All results above are formalized in Lean~4 with Mathlib~\cite{Mathlib} in the repository \url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6}. The development contains no \texttt{sorry}; \texttt{\#print axioms} reports only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. Primes are indexed from $0$ in Lean ($p_0=2$). Key definitions and statements (rendered here in ASCII notation; the source uses Lean's Unicode symbols):
+
+\begin{lstlisting}
+def H1Le (c : Nat) : Prop := forall N, exists n, n >= N /\ gap n <= c
+def Admissible (H : Finset Nat) : Prop :=
+  forall q, q.Prime -> exists r < q, forall h in H, h % q != r
+def DHL (k j : Nat) : Prop :=
+  forall H : Finset Nat, H.card = k -> Admissible H ->
+    forall N, exists n, n >= N /\ j <= (H.filter (fun h => (n + h).Prime)).card
+
+theorem dhl32_H1Le_six (h : DHL 3 2) : H1Le 6
+theorem H1Le_three_iff_twin : H1Le 3 <-> forall N, exists n, n >= N /\ gap n = 2
+theorem dhl32_not_implies_dhl22_combinatorially :
+  exists (P : Nat -> Prop) (_ : DecidablePred P),
+    DHLfor P 3 2 /\ (forall n, Not (P n /\ P (n + 2))) /\ Not DHLfor P 2 2
+structure ParityBarrier (Proves : Nat -> Nat -> Prop) : Prop where
+  bound : forall k j, Proves k j -> j <= (k + 1) / 2
+\end{lstlisting}
+
+{\raggedright
+\noindent Correspondence with the text:
+\begin{itemize}
+\item \cref{lem:adm}: \texttt{admissible\_02}, \texttt{admissible\_026}, \texttt{admissible\_046}.
+\item \cref{thm:gaps}: \texttt{two\_le\_gap}, \texttt{not\_H1Le\_one}, \texttt{H1Le\_three\_iff\_two}, \texttt{H1Le\_three\_iff\_twin}.
+\item \cref{thm:main}: \texttt{dhl32\_H1Le\_six}.
+\item \cref{thm:model}: \texttt{Ptoy\_DHL32}, \texttt{dhl32\_not\_implies\_dhl22\_combinatorially}.
+\item \cref{thm:parity}: \texttt{ParityBarrier}, \texttt{parity\_two\_needs\_three}, \texttt{admissible\_three\_diam\_ge\_six}, \texttt{min\_diam\_admissible\_three}.
+\end{itemize}\par}
+Statements from the literature (the bound $246$, the conditional status of $\DHL[3,2]$, and the unverified Stadlmann claim) are not formalized.
+
+\section{Formal statements, provenance and axioms}\label{sec:formal}
+
+\subsection*{Exact correspondence}
+Each result above is the informal reading of the Lean declaration listed below. Line numbers refer to the Lean sources at commit \texttt{9a9f97d} (merge of \texttt{pipelinehalt/align-wording} into the default branch); the Lean sources are unchanged in tag \texttt{v1.4}.
+
+{\footnotesize
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Paper & Lean declaration & File:line \\
+\hline
+\cref{def:H1le} & \texttt{H1Le} & \texttt{DHL32/Basic.lean:18} \\
+\cref{def:admissible} & \texttt{Admissible} & \texttt{DHL32/Basic.lean:22} \\
+\cref{def:dhl} & \texttt{DHL}; \texttt{DHLfor} & \texttt{Basic.lean:27}; \texttt{Theorems34.lean:17} \\
+\cref{lem:adm} & \texttt{admissible\_046}, \texttt{admissible\_026} & \texttt{Basic.lean:97, 113} \\
+ & \texttt{admissible\_02} & \texttt{Theorems34.lean:74} \\
+\cref{thm:gaps} & \texttt{two\_le\_gap}, \texttt{gap\_even} & \texttt{Basic.lean:45, 53} \\
+ & \texttt{not\_H1Le\_one}, \texttt{H1Le\_three\_iff\_two} & \texttt{Basic.lean:62, 68} \\
+ & \texttt{H1Le\_three\_iff\_twin} & \texttt{Basic.lean:81} \\
+\cref{thm:main} & \texttt{dhl32\_H1Le\_six} & \texttt{Basic.lean:148} \\
+\cref{thm:model} & \texttt{Ptoy}, \texttt{Ptoy\_iff\_mod\_four\_mem} & \texttt{Theorems34.lean:25, 30} \\
+ & \texttt{Ptoy\_DHL32} & \texttt{Theorems34.lean:52} \\
+ & \texttt{dhl32\_not\_implies\_dhl22\_combinatorially} & \texttt{Theorems34.lean:94} \\
+\cref{hyp:parity} & \texttt{ParityBarrier} (a \texttt{structure}, not an axiom) & \texttt{Theorems34.lean:106} \\
+\cref{thm:parity} & \texttt{parity\_two\_needs\_three} & \texttt{Theorems34.lean:110} \\
+ & \texttt{admissible\_three\_diam\_ge\_six}, \texttt{min\_diam\_admissible\_three} & \texttt{Theorems34.lean:116, 136} \\
+\hline
+\end{tabular}
+\end{center}}
+
+The main theorem reads, verbatim in ASCII, \texttt{theorem dhl32\_H1Le\_six (h : DHL 3 2) : H1Le 6}. Its only hypothesis is $\DHL[3,2]$.
+
+\subsection*{Indexing}
+Lean indexes primes from $0$ (\texttt{p 0 = 2}); the paper indexes from $1$ ($p_1=2$). The paper's ``$n\ge2$'' in \cref{thm:gaps} is therefore Lean's \texttt{1 <= n} in \texttt{two\_le\_gap} and \texttt{gap\_even}. This is the same statement, not a weakening.
+
+\subsection*{Build and axioms}
+Toolchain \texttt{leanprover/lean4:v4.30.0-rc1}; Mathlib tag \texttt{v4.30.0-rc1} (commit \texttt{0c154d6}). On 3 November 2026 a full \texttt{lake build} of commit \texttt{9a9f97d} completed successfully. The Lean sources contain no \texttt{sorry}, no \texttt{native\_decide} and no \texttt{axiom} declarations. \texttt{lake env lean AxiomAudit.lean} (\texttt{\#print axioms}) reports, for every declaration, a subset of \texttt{[propext, Classical.choice, Quot.sound]}; the full output is in \cref{app:cert}.
+
+\subsection*{Scope: what is and is not proved}
+Proved: the implication $\DHL[3,2]\Rightarrow H_1\le6$, with $\DHL[3,2]$ as the explicit hypothesis \texttt{h : DHL 3 2}; and the unconditional statements \cref{lem:adm}, \cref{thm:gaps}, \cref{thm:model} and \cref{thm:parity}(2). \textbf{Not proved:} $\DHL[3,2]$ itself, which is an open conjecture (known only conditionally on GEH~\cite{Polymath}); any unconditional bound on $H_1$, bounded gaps, or the twin prime conjecture; the parity barrier, which enters only as the hypothesis \texttt{ParityBarrier}. \Cref{thm:model} is not an independence result for the primes. Literature statements cited in \cref{sec:intro} are not formalized.
+
+\section{Paper-to-Lean alignment check}\label{sec:align}
+The statements of this paper were compared with the Lean declarations using PipelineHalt, a paper-to-Lean alignment harness written by the author. PipelineHalt compares wording and structure: it flags places where a Lean statement appears narrower, conditional or silent relative to the paper, and halts with a question for the author rather than guessing. It does not verify mathematics; correctness is established only by the Lean kernel. On this repository it raised three flags: docstring numbering (``Theorem~1'') versus the paper's numbering, closed by a hand-written mapping file; the index shift $n\ge1$ versus $n\ge2$, closed because the definitions settle it (\texttt{p 0 = 2}); and the residue wording $\{0,1\}$ versus \texttt{n \% 4 < 2}, closed by the kernel-checked lemma \texttt{Ptoy\_iff\_mod\_four\_mem}. No flags remain open. A clean alignment report means only that no unexplained wording-level difference was found.
+
+\section{Discussion}\label{sec:discussion}
+
+A proof of $H_1=2$ must go beyond the combinatorial content of $\DHL[3,2]$ (\cref{rem:model}) and, if it is sieve-theoretic, must overcome the limitation recorded in \cref{hyp:parity}. Arguments that overcome or sidestep parity-type limitations exist in other settings. Friedlander and Iwaniec~\cite{FI} showed that $X^2+Y^4$ represents infinitely many primes, using bilinear (Type~II) estimates to overcome the parity obstruction. Maynard~\cite{Maynard19} proved that there are infinitely many primes with a restricted digit, using Fourier-analytic control of Type~I and Type~II sums; this is a related use of bilinear-sum methods rather than a direct parity-breaking result of the Friedlander--Iwaniec kind. Until such an ingredient is brought to bear on prime gaps, $\DHL[3,2]$ and $H_1\le6$ remain the natural limit of the GPY/Maynard--Tao method under \cref{hyp:parity}.
+
+
+\appendix
+\section{Verification certificate}\label{app:cert}
+
+The formal development accompanying this note was machine-checked as follows.
+
+{\raggedright
+\begin{itemize}
+\item Repository:\\ {\footnotesize\url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6}}
+\item Verified commit:\\ {\footnotesize\texttt{9a9f97dd5c9353454029789c98df411fc38fd2fe}}
+\item Lean toolchain: \texttt{leanprover/lean4:v4.30.0-rc1}
+\item Mathlib: tag \texttt{v4.30.0-rc1}, commit (from \texttt{lake-manifest.json})\\ {\footnotesize\texttt{0c154d67103f74be3a0f2c509f72ccbf5be9f2a7}}
+\item Continuous integration run (build, axiom audit, \texttt{sorry}/\texttt{axiom} scan; passed):\\ {\footnotesize\url{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/41718880552}}
+\item SHA-256 of the source tarball of the verified commit
+(\href{https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/archive/9a9f97dd5c9353454029789c98df411fc38fd2fe.tar.gz}{\texttt{archive/9a9f97d.tar.gz}} on GitHub):\\
+{\footnotesize\texttt{fce92cd5198dd1cea525e468b1aa9f3f2d6726e9ffb1b6f77dc599df01a6df7e}}
+\end{itemize}\par}
+
+The tarball hash refers to the verified commit rather than to the release tag, since the tag also contains this paper and a document cannot contain the hash of an archive that includes itself. The Lean sources (\texttt{DHL32/}, \texttt{AxiomAudit.lean}, \texttt{lakefile.lean}, \texttt{lean-toolchain}, \texttt{lake-manifest.json}) are unchanged between that commit and the release tag.
+
+\textbf{The development contains no \texttt{sorry} and no user-declared axioms.} Every theorem and lemma depends only on Lean's standard axioms \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The table below is the verbatim output of \texttt{lake env lean AxiomAudit.lean} (\texttt{\#print axioms}) from a fresh run on the verified commit.
+
+\begin{center}\footnotesize
+\begin{tabular}{ll}
+\hline
+Lean declaration & \texttt{\#print axioms} \\
+\hline
+\texttt{DHL32.p\_strictMono} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_prime} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_zero} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.p\_odd} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.two\_le\_gap} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.gap\_even} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.not\_H1Le\_one} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.H1Le\_three\_iff\_two} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.H1Le\_three\_iff\_twin} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.residues\_small} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.admissible\_046} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.admissible\_026} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.gap\_le\_of\_primes} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.dhl32\_H1Le\_six} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.DHLfor\_prime} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_no\_twin} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_iff\_mod\_four\_mem} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_hit} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_hit\textquotesingle{}} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.Ptoy\_DHL32} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.admissible\_02} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.dhl32\_not\_implies\_dhl22\_combinatorially} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.parity\_two\_needs\_three} & \texttt{[propext, Quot.sound]} \\
+\texttt{DHL32.admissible\_three\_diam\_ge\_six} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.min\_diam\_admissible\_three} & \texttt{[propext, Classical.choice, Quot.sound]} \\
+\texttt{DHL32.parity\_floor} & \texttt{[propext, Quot.sound]} \\
+\hline
+\end{tabular}
+\end{center}
+
+\bibliographystyle{amsplain}
+\bibliography{DHL32-final}
+
+\end{document}

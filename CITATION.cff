@@ -6,9 +6,16 @@ authors:
     given-names: "Benjamin Stanley"
     orcid: "https://orcid.org/0009-0006-7068-3718"
     email: "frohmanbenjamin@gmail.com"
-type: software
+type: article
 repository-code: "https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6"
 license: Apache-2.0
-version: "1.1"
-date-released: "2026-11-01"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23931656"
+    description: "Reserved DOI for v1.4 final paper (Zenodo draft, NOT YET PUBLISHED; will not resolve until published)"
+  - type: doi
+    value: "10.5281/zenodo.23845116"
+    description: "Zenodo concept DOI (all versions)"
+version: "1.4"
+date-released: "2026-11-03"
 keywords: ["prime gaps", "DHL[3,2]", "twin prime conjecture", "Lean 4", "Mathlib"]

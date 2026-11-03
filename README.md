@@ -69,3 +69,11 @@ lake env lean AxiomAudit.lean   # prints axioms used
 ```
 
 Copyright © 2026 Benjamin Stanley Frohman (ORCID [0009-0006-7068-3718](https://orcid.org/0009-0006-7068-3718)). Licensed under the [Apache License, Version 2.0](LICENSE); see [NOTICE](NOTICE).
+
+## Scope (honest statement)
+
+- **Proved (Lean 4, Mathlib v4.30.0-rc1):** DHL[3,2] ⇒ liminf of prime gaps ≤ 6 (`dhl32_H1Le_six`, `DHL32/Basic.lean:148`), together with the supporting lemmas and the "honest" Theorems 3–4 in `DHL32/Theorems34.lean`.
+- **Conditional by design:** the main result assumes DHL[3,2], which is an **open conjecture**. This repository does **not** prove DHL[3,2], and does **not** prove bounded prime gaps (or twin primes) unconditionally.
+- **No `sorry`.** `#print axioms` reports only `propext`, `Classical.choice`, `Quot.sound`.
+- **PipelineHalt** was used as a paper-to-Lean *wording* comparison. It is not a mathematical verifier; correctness rests on the Lean kernel.
+- Final paper: [`paper/DHL32-final.pdf`](paper/DHL32-final.pdf) (source `paper/DHL32-final.tex`, `.bib`). DOI **10.5281/zenodo.23931656 — reserved, not yet published.**
