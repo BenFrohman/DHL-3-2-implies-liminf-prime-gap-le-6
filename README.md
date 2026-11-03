@@ -1,6 +1,6 @@
 # dhl32-lean — DHL[3,2] ⇒ H₁ ≤ 6, formalized in Lean 4 + Mathlib
 
-[![Lean build](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml/badge.svg)](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml)
+[![lean.yml](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml/badge.svg?branch=master)](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml)
 
 Lean formalization of the elementary parts of Benjamin Frohman's note
 *"Resolving a category error: DHL[3,2] yields H₁ ≤ 6, not H₁ = 2"* (Sept 2026).
