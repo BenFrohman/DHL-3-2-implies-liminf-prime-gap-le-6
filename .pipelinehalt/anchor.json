@@ -1,0 +1,96 @@
+{
+  "source": "BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6 paper/DHL32_note.tex (claims extracted verbatim by `pipelinehalt extract`; only the `lean` mappings were added by hand)",
+  "claims": [
+    {
+      "id": "def:admissible",
+      "number": "Definition 2.1",
+      "statement": "A finite set $\\mathcal H\\subset\\mathbb N$ is \\emph{admissible} if for every prime $q$ there is a residue class modulo $q$ containing no element of $\\mathcal H$.",
+      "kind": "definition",
+      "source": "paper/DHL32_note.tex:58"
+    },
+    {
+      "id": "def:dhl",
+      "number": "Definition 2.2",
+      "statement": "For a predicate $P$ on $\\mathbb N$ and $k\\ge j\\ge1$, let $\\DHL_P[k,j]$ be the statement: for every admissible $\\mathcal H$ with $|\\mathcal H|=k$ there are infinitely many $n$ such that $\\#\\{h\\in\\mathcal H: P(n+h)\\}\\ge j$. Write $\\DHL[k,j]$ for $\\DHL_P[k,j]$ with $P$ = primality.",
+      "kind": "definition",
+      "source": "paper/DHL32_note.tex:62"
+    },
+    {
+      "id": "def:H1le",
+      "number": "Definition 2.3",
+      "statement": "For $c\\in\\mathbb N$ write $H_1\\le c$ for the statement that $p_{n+1}-p_n\\le c$ for infinitely many $n$. For an integer-valued sequence this is equivalent to $\\liminf_{n}(p_{n+1}-p_n)\\le c$.",
+      "kind": "definition",
+      "source": "paper/DHL32_note.tex:66"
+    },
+    {
+      "id": "lem:adm",
+      "number": "Lemma 2.4",
+      "statement": "The sets $\\{0,2\\}$, $\\{0,2,6\\}$ and $\\{0,4,6\\}$ are admissible.",
+      "kind": "lemma",
+      "source": "paper/DHL32_note.tex:70"
+    },
+    {
+      "id": "thm:gaps",
+      "number": "Theorem 3.1",
+      "statement": "For all $n\\ge2$, $p_{n+1}-p_n\\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\\ge2$, and $H_1\\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.",
+      "kind": "theorem",
+      "source": "paper/DHL32_note.tex:79"
+    },
+    {
+      "id": "thm:main",
+      "number": "Theorem 3.2",
+      "statement": "$\\DHL[3,2]$ implies $H_1\\le6$.",
+      "kind": "theorem",
+      "source": "paper/DHL32_note.tex:86"
+    },
+    {
+      "id": "thm:model",
+      "number": "Theorem 3.3",
+      "statement": "Let $P(n)$ hold if and only if $n\\bmod4\\in\\{0,1\\}$. Then $\\DHL_P[3,2]$ holds (indeed for every $3$-element set), but $P(n)\\wedge P(n+2)$ holds for no $n$; in particular $\\DHL_P[2,2]$ fails.",
+      "kind": "theorem",
+      "source": "paper/DHL32_note.tex:93"
+    },
+    {
+      "id": "hyp:parity",
+      "number": "Hypothesis 3.5",
+      "statement": "A given sieve method establishes $\\DHL[k,j]$ only if $j\\le\\lceil k/2\\rceil$.",
+      "kind": "hypothesis",
+      "source": "paper/DHL32_note.tex:104",
+      "title": "Parity barrier"
+    },
+    {
+      "id": "thm:parity",
+      "number": "Theorem 3.6",
+      "statement": "\\begin{enumerate} \\item Under \\cref{hyp:parity}, a sieve method establishing $\\DHL[k,2]$ has $k\\ge3$. \\item (Unconditional.) No admissible $3$-element set is contained in an interval $[a,a+5]$. Together with \\cref{lem:adm}, the minimal diameter of an admissible $3$-set is exactly $6$. \\end{enumerate}",
+      "kind": "theorem",
+      "source": "paper/DHL32_note.tex:110"
+    }
+  ],
+  "clarifications": {
+    "56d42291f91e": {
+      "claimId": "thm:gaps",
+      "kind": "narrower",
+      "question": "Paper claim Theorem 3.1 (thm:gaps) states: “For all $n\\ge2$, $p_{n+1}-p_n\\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\\ge2$, and $H_1\\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.”. Lean theorem `two_le_gap` assumes `1 ≤ n` (n ≥ 1), but the claim says n ≥ 2. Is this an intentional indexing convention or a genuine change of domain?",
+      "answer": "equivalent, intentional: index shift only. Lean `p` is 0-indexed (DHL32/Basic.lean:9, p 0 = 2) while the paper is 1-indexed (DHL32_note.tex:48, p_1 = 2), so Lean n >= 1 is exactly paper n >= 2. (two_le_gap)",
+      "verdict": "intentional",
+      "answeredAt": "2026-11-03T19:54:02.279Z"
+    },
+    "cc5e051f3e37": {
+      "claimId": "thm:gaps",
+      "kind": "narrower",
+      "question": "Paper claim Theorem 3.1 (thm:gaps) states: “For all $n\\ge2$, $p_{n+1}-p_n\\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\\ge2$, and $H_1\\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.”. Lean lemma `gap_even` assumes `1 ≤ n` (n ≥ 1), but the claim says n ≥ 2. Is this an intentional indexing convention or a genuine change of domain?",
+      "answer": "equivalent, intentional: index shift only. Lean `p` is 0-indexed (DHL32/Basic.lean:9, p 0 = 2) while the paper is 1-indexed (DHL32_note.tex:48, p_1 = 2), so Lean n >= 1 is exactly paper n >= 2. (gap_even)",
+      "verdict": "intentional",
+      "answeredAt": "2026-11-03T19:54:02.323Z"
+    },
+    "382682972d36": {
+      "claimId": "thm:model",
+      "kind": "narrower",
+      "question": "Paper claim Theorem 3.3 (thm:model) states: “Let $P(n)$ hold if and only if $n\\bmod4\\in\\{0,1\\}$. Then $\\DHL_P[3,2]$ holds (indeed for every $3$-element set), but $P(n)\\wedge P(n+2)$ holds for no $n$; in particular $\\DHL_P[2,2]$ fails.”. The matched Lean statement(s) `Ptoy_DHL32`, `Ptoy_no_twin`, `dhl32_not_implies_dhl22_combinatorially` do not mention the set {0,1}. Is the omission intentional, or is it covered by a declaration the matcher missed?",
+      "answer": "equivalent, intentional: for n : ℕ, n % 4 ∈ {0,1,2,3}, so n % 4 < 2 ↔ n % 4 ∈ {0,1}; the paper's P(n) :⇔ n mod 4 ∈ {0,1} (DHL32_note.tex:94) is Lean's Ptoy (Theorems34.lean:25). Local branch pipelinehalt/align-wording adds Ptoy_iff_mod_four_mem stating this equivalence.",
+      "verdict": "intentional",
+      "answeredAt": "2026-11-03T19:54:02.364Z"
+    }
+  },
+  "title": "Resolving a category error: DHL[3,2] yields H1 <= 6, not H1 = 2 (B. S. Frohman, 2026)"
+}

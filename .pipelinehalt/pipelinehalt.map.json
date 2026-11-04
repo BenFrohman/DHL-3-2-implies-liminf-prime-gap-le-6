@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "note": "Hand-written pairing of paper claims (ids = LaTeX labels in paper/DHL32_note.tex) with Lean declarations in DHL32/*.lean at commit 69a13d3. Drafted from the Lean docstrings for review by the author. It tells PipelineHalt where to look; it does not assert that the statements mean the same thing.",
+  "claims": {
+    "def:admissible": {
+      "lean": [
+        "Admissible"
+      ]
+    },
+    "def:dhl": {
+      "lean": [
+        "DHL",
+        "DHLfor"
+      ]
+    },
+    "def:H1le": {
+      "lean": [
+        "H1Le"
+      ]
+    },
+    "lem:adm": {
+      "lean": [
+        "admissible_02",
+        "admissible_026",
+        "admissible_046"
+      ]
+    },
+    "thm:gaps": {
+      "lean": [
+        "two_le_gap",
+        "gap_even",
+        "not_H1Le_one",
+        "H1Le_three_iff_two",
+        "H1Le_three_iff_twin"
+      ],
+      "aliases": [
+        "Theorem 1"
+      ],
+      "note": "Lean docstrings number the main results 1-4; the paper prints 3.1, 3.2, 3.3, 3.6."
+    },
+    "thm:main": {
+      "lean": [
+        "dhl32_H1Le_six"
+      ],
+      "aliases": [
+        "Theorem 2"
+      ]
+    },
+    "thm:model": {
+      "lean": [
+        "Ptoy_DHL32",
+        "Ptoy_no_twin",
+        "dhl32_not_implies_dhl22_combinatorially",
+        "Ptoy_iff_mod_four_mem"
+      ],
+      "aliases": [
+        "Theorem 3"
+      ],
+      "note": "`Ptoy_iff_mod_four_mem` lives on branch https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/tree/pipelinehalt/align-wording (not on the default branch); this map is checked against that branch."
+    },
+    "hyp:parity": {
+      "lean": [
+        "ParityBarrier"
+      ]
+    },
+    "thm:parity": {
+      "lean": [
+        "parity_two_needs_three",
+        "admissible_three_diam_ge_six",
+        "min_diam_admissible_three"
+      ],
+      "aliases": [
+        "Theorem 4"
+      ]
+    }
+  }
+}

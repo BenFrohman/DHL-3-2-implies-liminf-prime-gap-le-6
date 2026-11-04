@@ -1,0 +1,42 @@
+{
+  "tool": "pipelinehalt",
+  "anchor": "/workspace/ph-runs/_out/DHL-3-2-implies-liminf-prime-gap-le-6/anchor.json",
+  "instructions": "Fill in `answer` for each question (start with yes/intentional or no/unintended, optionally followed by an explanation), then run `pipelinehalt answer --anchor <anchor> --from <this file>`. Blank answers stay open.",
+  "questions": [
+    {
+      "id": "ac788105673c",
+      "claimId": "lem:adm",
+      "kind": "conditional",
+      "question": "Paper claim Lemma 2.4 (lem:adm) states: “The sets $\\{0,2\\}$, $\\{0,2,6\\}$ and $\\{0,4,6\\}$ are admissible.”. Lean theorem `min_diam_admissible_three` assumes `H.card = 3`, which the claim does not state. Is this extra hypothesis intentional?",
+      "answer": ""
+    },
+    {
+      "id": "f0d3f21b845c",
+      "claimId": "thm:gaps",
+      "kind": "ambiguous",
+      "question": "Paper claim Theorem 3.1 (thm:gaps) states: “For all $n\\ge2$, $p_{n+1}-p_n\\ge2$ and $p_{n+1}-p_n$ is even. Consequently $H_1\\ge2$, and $H_1\\le3$ if and only if $p_{n+1}-p_n=2$ for infinitely many $n$.”. Lean theorem `H1Le_three_iff_twin` is documented as “Theorem 1”, while the paper numbers this claim Theorem 3.1. Which numbering should readers and tools use?",
+      "answer": ""
+    },
+    {
+      "id": "914b1b84bfe9",
+      "claimId": "thm:main",
+      "kind": "ambiguous",
+      "question": "Paper claim Theorem 3.2 (thm:main) states: “$\\DHL[3,2]$ implies $H_1\\le6$.”. Lean theorem `dhl32_H1Le_six` is documented as “Theorem 2”, while the paper numbers this claim Theorem 3.2. Which numbering should readers and tools use?",
+      "answer": ""
+    },
+    {
+      "id": "091d89359f15",
+      "claimId": "thm:model",
+      "kind": "silent",
+      "question": "Paper claim Theorem 3.3 (thm:model) states: “Let $P(n)$ hold if and only if $n\\bmod4\\in\\{0,1\\}$. Then $\\DHL_P[3,2]$ holds (indeed for every $3$-element set), but $P(n)\\wedge P(n+2)$ holds for no $n$; in particular $\\DHL_P[2,2]$ fails.”. No Lean declaration matching it was found among 25 candidates. Closest candidate: `Ptoy_DHL32` (score 0.42, but it matches claim thm:main better). Is this claim intentionally not formalized, or which declaration should it map to?",
+      "answer": ""
+    },
+    {
+      "id": "17f36fcad029",
+      "claimId": "thm:parity",
+      "kind": "ambiguous",
+      "question": "Paper claim Theorem 3.6 (thm:parity) states: “• Under \\cref{hyp:parity}, a sieve method establishing $\\DHL[k,2]$ has $k\\ge3$. • (Unconditional.) No admissible $3$-element set is contained in an interval $[a,a+5]$. Together with \\cref{lem:adm}, t…”. Lean theorem `admissible_three_diam_ge_six` is documented as “Theorem 4”, while the paper numbers this claim Theorem 3.6. Which numbering should readers and tools use?",
+      "answer": ""
+    }
+  ]
+}
