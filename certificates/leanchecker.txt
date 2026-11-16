@@ -1,0 +1,9 @@
+checker: leanchecker source shipped with v4.30.0-rc1 (src/lean/LeanChecker.lean), prefix match -> exact match, run with lean --run
+  patch: 93c93
+  patch: <         if !fresh && target.isPrefixOf m || target == m then
+  patch: ---
+  patch: >         if !fresh && target == m || target == m then
+DHL32: OK (1 module replayed)
+DHL32.Basic: OK (1 module replayed)
+DHL32.Theorems34: OK (1 module replayed)
+RESULT: 3 of 3 modules replayed through the kernel, 0 failures

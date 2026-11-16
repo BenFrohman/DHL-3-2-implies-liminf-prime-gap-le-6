@@ -2,6 +2,10 @@
 
 [![lean.yml](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml/badge.svg?branch=master)](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/workflows/lean.yml)
 
+## Kernel certificate
+
+[certificates/CERTIFICATE.md](certificates/CERTIFICATE.md): commit `0546ab9`, `leanprover/lean4:v4.30.0-rc1`. `lake build` passes; the sorry/axiom scan finds 0 hits; **29 theorems depend only on `propext`, `Classical.choice`, `Quot.sound`**; 3 of 3 modules replayed through the kernel, 0 failures ([CI run](https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/43937997202)).
+
 Lean formalization of the elementary parts of Benjamin Frohman's note
 *"Resolving a category error: DHL[3,2] yields H₁ ≤ 6, not H₁ = 2"* (Sept 2026).
 **No `sorry`, no new axioms.** Every theorem depends only on Lean's standard
