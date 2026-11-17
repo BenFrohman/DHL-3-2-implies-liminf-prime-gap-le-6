@@ -5,13 +5,13 @@ This file records a reproducible machine check of the Lean 4 development in this
 | Item | Value |
 |---|---|
 | Repository | https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6 |
-| Certified commit | `0546ab9f808799c91e6748548398092071f8c6f0` (branch `chore/kernel-certificate`) |
-| Lean sources | identical to `master` at `cb162607825d58286d123284bcb8c7b73e8d81bc`: no `.lean`, lakefile, manifest or toolchain file differs; the certified commit only adds CI and the scripts in `certificates/tools/` |
+| Certified commit | `3ef43e14e59968ec2e4565d717feb3c1b70b701b` (branch `master`) |
+| Lean sources | the certified commit is the `master` head itself; the certificate files were committed afterwards in a commit that changes no `.lean`, lakefile, manifest or toolchain file |
 | lean-toolchain | `leanprover/lean4:v4.30.0-rc1` |
 | Lean | Lean (version 4.30.0-rc1, x86_64-unknown-linux-gnu, commit 714601baf118066cbf3f282361339c6d06665b2a, Release) |
 | Mathlib | `0c154d67103f74be3a0f2c509f72ccbf5be9f2a7` (lake-manifest.json; inputRev `v4.30.0-rc1`) |
-| Date (UTC) | 2026-11-16T19:22:36Z |
-| CI run | https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/43937997202 |
+| Date (UTC) | 2026-11-16T20:50:01Z |
+| CI run | https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/43953546179 |
 | `lake build` | `Build completed successfully (8267 jobs).` ([build.log](build.log)) |
 | sorry / admit / native_decide / axiom scan | `RESULT: 0 hits` ([sorry-scan.txt](sorry-scan.txt)) |
 | `#print axioms` | `AUDIT PASS: 29 theorems in 2 modules depend only on propext, Classical.choice, Quot.sound (or on no axioms)` ([axioms.txt](axioms.txt)) |
@@ -65,5 +65,5 @@ Full `#print axioms` output (verbatim from `axioms.txt`):
 ## Rebuild
 
 ```
-git clone https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6.git && cd DHL-3-2-implies-liminf-prime-gap-le-6 && git checkout 0546ab9f808799c91e6748548398092071f8c6f0 && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
+git clone https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6.git && cd DHL-3-2-implies-liminf-prime-gap-le-6 && git checkout 3ef43e14e59968ec2e4565d717feb3c1b70b701b && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
 ```

@@ -1,0 +1,16 @@
+# Kernel certificate manifest
+# source commit: 3ef43e14e59968ec2e4565d717feb3c1b70b701b
+# lean-toolchain: leanprover/lean4:v4.30.0-rc1
+# Mathlib: 0c154d67103f74be3a0f2c509f72ccbf5be9f2a7 (lake-manifest.json; inputRev v4.30.0-rc1)
+# CI run: https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6/actions/runs/43953546179
+# rebuild: git clone https://github.com/BenFrohman/DHL-3-2-implies-liminf-prime-gap-le-6.git && cd DHL-3-2-implies-liminf-prime-gap-le-6 && git checkout 3ef43e14e59968ec2e4565d717feb3c1b70b701b && lake exe cache get && lake build && python3 certificates/tools/sorry_scan.py && python3 certificates/tools/gen_audit.py /tmp/KernelCertificateAudit.lean /tmp/modules.txt && lake env lean /tmp/KernelCertificateAudit.lean > /tmp/axioms.raw.txt && python3 certificates/tools/check_audit.py /tmp/axioms.raw.txt | tail -n 1
+# verify: cd certificates && sha256sum -c MANIFEST.sha256
+b353355c3a33addf2f5b686d58f0399b8406d76478b714c05730e95db40590a7  CERTIFICATE.md
+e3ddcbfe8fc34f8fc848b8538e61fb4ff1783f8ac54aa4c305757601d37ea37f  KernelCertificateAudit.lean.txt
+c10d15e72761ef815f355ffdbdaf31ad6817f4339ab1dd8ecc0ff2064bc9bfe4  axioms.raw.txt
+d72df47217befdcf1b5f4b66605e426d44ea0dd471803fc763b3a6a4b25fdd14  axioms.txt
+bc805e3b9ce70faa1bd402c137bb97a4ff3800083adc92a59616a6c946ddf965  build.log
+81233cc45afa1598ab8545b01fb2a32d1dbf7faee1dac95db7540207ae3c2e42  environment.txt
+8fb741ff46eb3b3dc55d99ddb4153261b1f792b1a65a3804a3edb49751611e72  leanchecker.txt
+70797bf95658015aba732b10a2392c5a5b0ebbadb8518085dd214c20199b3317  modules.txt
+b879711e072c97317b45cf73e96fc96e79ecdbf943d76549d21c8246546ff93b  sorry-scan.txt
